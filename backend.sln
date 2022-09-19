@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32421.90
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "backend", "WebApplication1\backend.csproj", "{9B3F614D-50E3-498B-852E-85D7FF0B6F08}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{F1ACD225-F9A0-46E2-B179-677CC01E7BB8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain Classes", "Domain Classes\Domain Classes.csproj", "{3ACD6BFA-A7D7-4C12-B9D3-F30B4A3E0C8A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9B3F614D-50E3-498B-852E-85D7FF0B6F08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B3F614D-50E3-498B-852E-85D7FF0B6F08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B3F614D-50E3-498B-852E-85D7FF0B6F08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B3F614D-50E3-498B-852E-85D7FF0B6F08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F1ACD225-F9A0-46E2-B179-677CC01E7BB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F1ACD225-F9A0-46E2-B179-677CC01E7BB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F1ACD225-F9A0-46E2-B179-677CC01E7BB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F1ACD225-F9A0-46E2-B179-677CC01E7BB8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3ACD6BFA-A7D7-4C12-B9D3-F30B4A3E0C8A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3ACD6BFA-A7D7-4C12-B9D3-F30B4A3E0C8A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3ACD6BFA-A7D7-4C12-B9D3-F30B4A3E0C8A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3ACD6BFA-A7D7-4C12-B9D3-F30B4A3E0C8A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1D333F1E-F9C8-41CF-B790-ECB116371DC6}
+	EndGlobalSection
+EndGlobal
