@@ -21,47 +21,62 @@ namespace backend.API
         public async Task<List<CursusInstantieDTO>> GetAll()
         {
             List<CursusInstantieDTO> list = new List<CursusInstantieDTO>();
-            IEnumerable<CursusInstantie> instanties = await _cursusInstantieRepository.GetCursusInstanties();
+            List<CursusInstantie> instanties = await _cursusInstantieRepository.GetCursusInstanties();
+            instanties.Sort((x, y) => y.Startdatum.CompareTo(x.Startdatum));
             foreach(CursusInstantie inst in instanties)
             {
                 //Put everything into the DTO
                 CursusInstantieDTO dto = new CursusInstantieDTO();
                 dto.Id = inst.Id;
                 dto.StartDate = inst.Startdatum;
-                
+               
                 dto.Cursusisten = (inst.Cursisten != null) ? inst.Cursisten.Count : 0;
 
                 //Forgot I put this connection in, hope it works on runtime 🤔
+                //inst.Cursus = _cursusRepository.GetCursusById(inst.cur)
                 dto.Duration = inst.Cursus.Duur;
                 dto.Titel = inst.Cursus.Titel;
                 dto.CursusId = inst.Cursus.Id;
+                dto.CursusCode = inst.Cursus.Code;
                 list.Add(dto);                
             }
             return list;
         }
         [HttpPost]
-        public async Task Add(CursusInstantieDTO dto)
+        public async Task<ActionResult<DuplicationDTO>> Add(List<CursusInstantieDTO> list)
         {
-            if (dto == null)
+            DuplicationDTO duplicatList = new DuplicationDTO();
+            foreach(CursusInstantieDTO dto in list)
             {
-                return;
+                if (dto == null)
+                {
+                    //return duplicatList;
+                    return Problem("Data not correct!");
+                }
+                CursusInstantie newCursusInst = new CursusInstantie();
+                //cursus.Id = dto.Id;
+                newCursusInst.Startdatum = dto.StartDate;
+                //Check if cursus exist or not 
+                //Should be moved to its own provider 
+                Cursus? cursus = await _cursusRepository.GetCursusByCode(dto.CursusCode);
+                if (cursus == null)
+                {
+                    //Create new cursus 
+                    cursus = new Cursus();
+                    cursus.Titel = dto.Titel;
+                    cursus.Duur = dto.Duration;
+                    cursus.Code = dto.CursusCode;
+                    await _cursusRepository.InsertCursus(cursus);
+                }
+                else
+                {
+                    duplicatList.DuplicatesCodes.Add(dto.CursusCode);
+                    duplicatList.AmountOfDuplictes++;
+                }
+                newCursusInst.Cursus = cursus;
+                await _cursusInstantieRepository.InsertCursusInstantie(newCursusInst);
             }
-            CursusInstantie inst = new CursusInstantie();
-            //cursus.Id = dto.Id;
-            inst.Startdatum = dto.StartDate;
-            //Check if cursus exist or not 
-            //Should be moved to its own provider 
-            Cursus? cursus = await _cursusRepository.GetCursusById(dto.CursusId);
-            if(cursus == null)
-            {
-                //Add new cursus 
-                cursus = new Cursus();
-                cursus.Titel = dto.Titel;
-                cursus.Duur = dto.Duration;
-                await _cursusRepository.InsertCursus(cursus);
-            }
-            inst.Cursus = cursus;
-            await _cursusInstantieRepository.InsertCursusInstantie(inst);
+            return Ok(duplicatList);
         }
     }
 }

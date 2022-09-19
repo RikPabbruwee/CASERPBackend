@@ -25,7 +25,7 @@ namespace DAL.Repositories
 
         public async Task<List<CursusInstantie>> GetCursusInstanties()
         {
-            return await _context.CursusInstanties.ToListAsync();
+            return await _context.CursusInstanties.Include(x => x.Cursus).ToListAsync();
         }
 
         public async Task InsertCursusInstantie(CursusInstantie cursusInstantie)

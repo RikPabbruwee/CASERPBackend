@@ -20,8 +20,13 @@ namespace DAL.Repositories
 
         public async Task<Cursus?> GetCursusById(int id)
         {
-             return await _context.Cursussen
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Cursussen
+               .FirstOrDefaultAsync(x => x.Id == id);
+        }
+        public async Task<Cursus?> GetCursusByCode(string code)
+        {
+            return await _context.Cursussen
+               .FirstOrDefaultAsync(x => x.Code == code);
         }
 
         public async Task<IEnumerable<Cursus>> GetCursussen()

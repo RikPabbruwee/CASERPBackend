@@ -15,5 +15,7 @@ namespace Domain_Classes
         public int Duur { get; set; }
         [Required, StringLength (300)]
         public string Titel { get; set; }  = "";
+        [Required, StringLength(10)]
+        public string Code { get; set; } = "";
     }
 }
