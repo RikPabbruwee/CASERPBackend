@@ -17,35 +17,29 @@ namespace backend.API
             _cursusRepository = cursusRepository;
             _cursusInstantieRepository = cursusInstantieRepository;
         }
-        [HttpGet]
+        
         public async Task<List<CursusInstantieDTO>> GetAll()
         {
+            return await GetAll(DateTime.Now);
+        }
+        [HttpGet]
+        public async Task<List<CursusInstantieDTO>> GetAll(DateTime? week)
+        {
             List<CursusInstantieDTO> list = new List<CursusInstantieDTO>();
-            List<CursusInstantie> instanties = await _cursusInstantieRepository.GetCursusInstanties();
+            List<CursusInstantie> instanties = await _cursusInstantieRepository.GetCursusInstantiesByWeek(week ?? DateTime.Now);
             instanties.Sort((x, y) => y.Startdatum.CompareTo(x.Startdatum));
-            foreach(CursusInstantie inst in instanties)
+            foreach (CursusInstantie inst in instanties)
             {
                 //Put everything into the DTO
-                CursusInstantieDTO dto = new CursusInstantieDTO();
-                dto.Id = inst.Id;
-                dto.StartDate = inst.Startdatum;
-               
-                dto.Cursusisten = (inst.Cursisten != null) ? inst.Cursisten.Count : 0;
-
-                //Forgot I put this connection in, hope it works on runtime 🤔
-                //inst.Cursus = _cursusRepository.GetCursusById(inst.cur)
-                dto.Duration = inst.Cursus.Duur;
-                dto.Titel = inst.Cursus.Titel;
-                dto.CursusId = inst.Cursus.Id;
-                dto.CursusCode = inst.Cursus.Code;
-                list.Add(dto);                
+                CursusInstantieDTO dto = CreateCursusInstantieDTOFromCursusInstantie(inst);
+                list.Add(dto);
             }
             return list;
         }
         [HttpPost]
-        public async Task<ActionResult<DuplicationDTO>> Add(List<CursusInstantieDTO> list)
+        public async Task<ActionResult<AddedDataDTO>> Add(List<CursusInstantieDTO> list)
         {
-            DuplicationDTO duplicatList = new DuplicationDTO();
+            AddedDataDTO Feedback = new AddedDataDTO();
             foreach(CursusInstantieDTO dto in list)
             {
                 if (dto == null)
@@ -67,16 +61,40 @@ namespace backend.API
                     cursus.Duur = dto.Duration;
                     cursus.Code = dto.CursusCode;
                     await _cursusRepository.InsertCursus(cursus);
+                    Feedback.NewCursus.Add(cursus);
+                }
+                
+                newCursusInst.Cursus = cursus;
+                CursusInstantie? possibleDuplicat = await _cursusInstantieRepository.FindPossibleDuplicat(newCursusInst);
+
+                if (possibleDuplicat != null)
+                {
+                    Feedback.DuplicateCursusInstanties.Add(CreateCursusInstantieDTOFromCursusInstantie(possibleDuplicat));
                 }
                 else
                 {
-                    duplicatList.DuplicatesCodes.Add(dto.CursusCode);
-                    duplicatList.AmountOfDuplictes++;
+                    await _cursusInstantieRepository.InsertCursusInstantie(newCursusInst);
+                    Feedback.NewCursusInstanties.Add(CreateCursusInstantieDTOFromCursusInstantie(newCursusInst));
                 }
-                newCursusInst.Cursus = cursus;
-                await _cursusInstantieRepository.InsertCursusInstantie(newCursusInst);
+                    
             }
-            return Ok(duplicatList);
+            return Ok(Feedback);
+        }
+        private CursusInstantieDTO CreateCursusInstantieDTOFromCursusInstantie(CursusInstantie input)
+        {
+            CursusInstantieDTO dto = new CursusInstantieDTO();
+            dto.Id = input.Id;
+            dto.StartDate = input.Startdatum;
+
+            dto.Cursusisten = (input.Cursisten != null) ? input.Cursisten.Count : 0;
+
+            //Forgot I put this connection in, hope it works on runtime 🤔
+            //inst.Cursus = _cursusRepository.GetCursusById(inst.cur)
+            dto.Duration = input.Cursus.Duur;
+            dto.Titel = input.Cursus.Titel;
+            dto.CursusId = input.Cursus.Id;
+            dto.CursusCode = input.Cursus.Code;
+            return dto;
         }
     }
 }

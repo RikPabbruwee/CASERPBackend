@@ -34,10 +34,12 @@ namespace DAL.Repositories
             return await _context.Cursussen.ToListAsync();
         }
 
-        public async Task InsertCursus(Cursus cursus)
+        public async Task<Cursus> InsertCursus(Cursus cursus)
         {
             await _context.Cursussen.AddAsync(cursus);
             await Save();
+            //Return cursus with its new ID
+            return cursus;
         }
 
         public async Task Save()

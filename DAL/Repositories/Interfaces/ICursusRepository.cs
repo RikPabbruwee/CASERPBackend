@@ -12,7 +12,7 @@ namespace DAL.Repositories.Interfaces
         public Task<IEnumerable<Cursus>> GetCursussen();
         public Task<Cursus?> GetCursusById(int id);
         public Task<Cursus?> GetCursusByCode(string code);
-        public Task InsertCursus(Cursus cursus);
+        public Task<Cursus> InsertCursus(Cursus cursus);
         public Task Save();
 
     }

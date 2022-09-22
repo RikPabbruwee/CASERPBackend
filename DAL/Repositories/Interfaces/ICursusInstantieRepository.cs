@@ -10,8 +10,10 @@ namespace DAL.Repositories.Interfaces
     public interface ICursusInstantieRepository
     {
         public Task<List<CursusInstantie>> GetCursusInstanties();
+        public Task<List<CursusInstantie>> GetCursusInstantiesByWeek(DateTime week);
         public Task<CursusInstantie?> GetCursusInstantieById(int id);
         public Task InsertCursusInstantie(CursusInstantie cursusInstantie);
+        public Task<CursusInstantie?> FindPossibleDuplicat(CursusInstantie cursusInstantie);
         public Task Save();
     }
 }

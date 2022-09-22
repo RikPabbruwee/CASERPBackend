@@ -27,11 +27,31 @@ namespace DAL.Repositories
         {
             return await _context.CursusInstanties.Include(x => x.Cursus).ToListAsync();
         }
-
+        public async Task<List<CursusInstantie>> GetCursusInstantiesByWeek(DateTime week)
+        {
+            //Get first and last day of the given day;
+            var culture = Thread.CurrentThread.CurrentCulture;
+            var diff = week.DayOfWeek - culture.DateTimeFormat.FirstDayOfWeek;
+            diff = diff < 0 ? diff+=7 : diff;
+            DateTime firstDay = week.AddDays(-diff).Date;
+            DateTime lastDay = firstDay.AddDays(4);
+            return await _context.CursusInstanties
+                .Include(x => x.Cursus)
+                .Where(x=> x.Startdatum > firstDay && x.Startdatum < lastDay)
+                .ToListAsync();
+        }
         public async Task InsertCursusInstantie(CursusInstantie cursusInstantie)
         {
             await _context.CursusInstanties.AddAsync(cursusInstantie);
             await Save();
+        }
+        public async Task<CursusInstantie?> FindPossibleDuplicat(CursusInstantie cursusInstantie)
+        {
+            return await _context.CursusInstanties.FirstOrDefaultAsync(x =>
+                x.Startdatum == cursusInstantie.Startdatum &&
+                x.Cursus.Duur == cursusInstantie.Cursus.Duur &&
+                x.Cursus.Code == cursusInstantie.Cursus.Code
+            );
         }
         public async Task Save()
         {
