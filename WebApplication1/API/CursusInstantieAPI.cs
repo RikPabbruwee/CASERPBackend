@@ -37,16 +37,17 @@ namespace backend.API
             return list;
         }
         [HttpPost]
-        public async Task<ActionResult<AddedDataDTO>> Add(List<CursusInstantieDTO> list)
+        public async Task<ActionResult<AddedDataDTO>> Add(List<CursusInstantieDTO> list, DateTime? startDate, DateTime? endDate)
         {
             AddedDataDTO Feedback = new AddedDataDTO();
-            foreach(CursusInstantieDTO dto in list)
+            foreach (CursusInstantieDTO dto in list)
             {
                 if (dto == null)
                 {
                     //return duplicatList;
                     return Problem("Data not correct!");
                 }
+
                 CursusInstantie newCursusInst = new CursusInstantie();
                 //cursus.Id = dto.Id;
                 newCursusInst.Startdatum = dto.StartDate;
@@ -63,10 +64,18 @@ namespace backend.API
                     await _cursusRepository.InsertCursus(cursus);
                     Feedback.NewCursus.Add(cursus);
                 }
-                
+
                 newCursusInst.Cursus = cursus;
                 CursusInstantie? possibleDuplicat = await _cursusInstantieRepository.FindPossibleDuplicat(newCursusInst);
+                //Date check
 
+                if (startDate != null && endDate != null) { 
+                    if (dto.StartDate > startDate || dto.StartDate < endDate)
+                    {
+                        Feedback.OutOfRangeCursusInstanties.Add(CreateCursusInstantieDTOFromCursusInstantie(newCursusInst));
+                        continue;
+                    }
+                }
                 if (possibleDuplicat != null)
                 {
                     Feedback.DuplicateCursusInstanties.Add(CreateCursusInstantieDTOFromCursusInstantie(possibleDuplicat));

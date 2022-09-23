@@ -11,6 +11,7 @@ namespace DAL.DTO
     {
         public List<CursusInstantieDTO> DuplicateCursusInstanties { get; set; } = new List<CursusInstantieDTO>();
         public List<CursusInstantieDTO> NewCursusInstanties { get; set;} = new List<CursusInstantieDTO>();
+        public List<CursusInstantieDTO> OutOfRangeCursusInstanties {  get; set;} = new List<CursusInstantieDTO>();
         public List<Cursus> NewCursus { get; set;} = new List<Cursus>();
     }
 }
