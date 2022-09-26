@@ -2,6 +2,7 @@ using DAL.DataAcess;
 using DAL.Repositories;
 using DAL.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,9 +16,12 @@ builder.Services.AddSwaggerGen();
 //{
 //    options.IdleTimeout = TimeSpan.FromMinutes(10);
 //});
+IConfigurationBuilder configbuilder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
+IConfiguration configuration = configbuilder.Build();
+string DatabaseConnectionString = configuration.GetConnectionString("database");
 builder.Services.AddDbContext<CursusContext>(options =>
 {
-    options.UseSqlServer("server=localhost;database=endcase;integrated security=true");
+    options.UseSqlServer(DatabaseConnectionString);
 });
 builder.Services.AddCors(options =>
 {
