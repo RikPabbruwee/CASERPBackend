@@ -18,12 +18,12 @@ namespace backend.API
             _cursusInstantieRepository = cursusInstantieRepository;
         }
         
-        public async Task<List<CursusInstantieDTO>> GetAll()
-        {
-            return await GetAll(DateTime.Now);
-        }
+        //public async Task<List<CursusInstantieDTO>> GetAll()
+        //{
+        //    return await GetAll(DateTime.Now);
+        //}
         [HttpGet]
-        public async Task<List<CursusInstantieDTO>> GetAll(DateTime? week)
+        public async Task<List<CursusInstantieDTO>> GetAllAsync(DateTime? week)
         {
             List<CursusInstantieDTO> list = new List<CursusInstantieDTO>();
             List<CursusInstantie> instanties = await _cursusInstantieRepository.GetCursusInstantiesByWeek(week ?? DateTime.Now);
@@ -37,7 +37,7 @@ namespace backend.API
             return list;
         }
         [HttpPost]
-        public async Task<ActionResult<AddedDataDTO>> Add(List<CursusInstantieDTO> list, DateTime? startDate, DateTime? endDate)
+        public async Task<ActionResult<AddedDataDTO>> AddAsync(List<CursusInstantieDTO> list, DateTime? startDate, DateTime? endDate)
         {
             AddedDataDTO Feedback = new AddedDataDTO();
             foreach (CursusInstantieDTO dto in list)
@@ -67,10 +67,13 @@ namespace backend.API
 
                 newCursusInst.Cursus = cursus;
                 CursusInstantie? possibleDuplicat = await _cursusInstantieRepository.FindPossibleDuplicat(newCursusInst);
-                //Date check
 
-                if (startDate != null && endDate != null) { 
-                    if (dto.StartDate > startDate || dto.StartDate < endDate)
+                //Date check
+                if (startDate != null && endDate != null) {
+                    endDate = endDate.Value.Date.AddDays(1).AddTicks(-1);
+                    //Push the dto start date up a bit so to include it if its the same day as the filter
+                    dto.StartDate = dto.StartDate.AddTicks(5);
+                    if (!(dto.StartDate > startDate && dto.StartDate < endDate))
                     {
                         Feedback.OutOfRangeCursusInstanties.Add(CreateCursusInstantieDTOFromCursusInstantie(newCursusInst));
                         continue;
@@ -94,15 +97,11 @@ namespace backend.API
             CursusInstantieDTO dto = new CursusInstantieDTO();
             dto.Id = input.Id;
             dto.StartDate = input.Startdatum;
-
-            dto.Cursusisten = (input.Cursisten != null) ? input.Cursisten.Count : 0;
-
-            //Forgot I put this connection in, hope it works on runtime 🤔
-            //inst.Cursus = _cursusRepository.GetCursusById(inst.cur)
-            dto.Duration = input.Cursus.Duur;
-            dto.Titel = input.Cursus.Titel;
-            dto.CursusId = input.Cursus.Id;
-            dto.CursusCode = input.Cursus.Code;
+            dto.Cursusisten = input.Cursisten != null ? input.Cursisten.Count : 0;
+            dto.Duration = input.Cursus != null ? input.Cursus.Duur : 0;
+            dto.Titel = input.Cursus != null ? input.Cursus.Titel : "";
+            dto.CursusId = input.Cursus != null ? input.Cursus.Id : 0;
+            dto.CursusCode = input.Cursus != null ? input.Cursus.Code : "";
             return dto;
         }
     }

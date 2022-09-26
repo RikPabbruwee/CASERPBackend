@@ -8,6 +8,7 @@ namespace backend.API
     
     [ApiController]
     [Route("api/cursus")]
+    /* is not really being used at the moment */
     public class CursusAPI : Controller
     {
         private ICursusRepository _cursusRepository;

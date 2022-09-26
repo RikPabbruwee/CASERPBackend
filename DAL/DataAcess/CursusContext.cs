@@ -9,6 +9,7 @@ namespace DAL.DataAcess
         public virtual DbSet<Cursus> Cursussen { get; set; }
         public virtual DbSet<CursusInstantie> CursusInstanties { get; set; }
         public virtual DbSet<Cursist> Cursisten { get; set; }
+        public virtual DbSet<FavoriteWeek> FavoriteWeeks { get; set; }
         public CursusContext(DbContextOptions options) : base(options)
         {
 

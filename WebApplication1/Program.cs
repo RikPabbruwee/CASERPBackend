@@ -30,6 +30,8 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddTransient<ICursusRepository, CursusDatabaseRepository>();
 builder.Services.AddTransient<ICursusInstantieRepository, CursusInstantieDatabaseRepository>();
+builder.Services.AddTransient<IFavoriteWeekRepository, FavoriteWeekDatabaseRepository>();
+builder.Services.AddTransient<ICursistRepository, CursistDatabaseRepository>();
 var app = builder.Build();
 app.UseCors("frontend");
 // Configure the HTTP request pipeline.
